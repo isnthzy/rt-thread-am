@@ -1,4 +1,5 @@
 ARCH ?= native
+AM_APPS_MK = build/${ARCH}/am-apps.mk
 FILE_MK = files.mk
 FILE_TMP = .tmp.$(FILE_MK)
 RTCONFIG_H = rtconfig.h
@@ -13,7 +14,7 @@ ifneq ($(ARCH),riscv32e-ysyxsoc)
 endif
 #在am层有另一层抽象，当为soc启动rtt情况下，am层会使用rtt-linker.ld脚本(该脚本是extra和linker的结合体)
 -include $(FILE_MK)
--include am-apps.mk
+-include $(AM_APPS_MK)
 include $(AM_HOME)/Makefile
 
 $(RTCONFIG_H):
@@ -33,7 +34,11 @@ menuconfig:
 	scons --genconfig
 	$(MAKE) init
 
-update:
-	python integrate-am-apps.py ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
+ifneq ($(MAKECMDGOALS),clean)
+update: $(AM_APPS_MK)
+$(AM_APPS_MK): integrate-am-apps.py
+	mkdir -p $(@D)
+	python3 $^ ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE)
+endif
 
-.PHONY: init menuconfig
+.PHONY: init menuconfig update
