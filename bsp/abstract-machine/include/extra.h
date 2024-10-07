@@ -4,6 +4,7 @@ typedef unsigned long useconds_t;
 
 #ifdef __ISA_NATIVE__
 // rename posix API to avoid conflict with glibc in native
+#define access    rt_access
 #define open      rt_open
 #define creat     rt_creat
 #define close     rt_close

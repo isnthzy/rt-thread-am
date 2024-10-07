@@ -7,7 +7,11 @@ NAME = rtthread
 SRCS = $(shell find src -name "*.c")
 CFLAGS += -DHAVE_CCONFIG_H -D__RTTHREAD__
 CFLAGS += -Wno-nonnull-compare
-LDFLAGS += -T extra.ld
+
+ifneq ($(ARCH),riscv32e-ysyxsoc)
+	LDFLAGS += -T extra.ld
+endif
+#在am层有另一层抽象，当为soc启动rtt情况下，am层会使用rtt-linker.ld脚本(该脚本是extra和linker的结合体)
 -include $(FILE_MK)
 -include am-apps.mk
 include $(AM_HOME)/Makefile
