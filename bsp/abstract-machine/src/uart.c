@@ -44,17 +44,22 @@ static int _uart_getc(struct rt_serial_device *serial) {
   if(*p != '\0'){
     ret = *(p ++);
   }else{
-    while (1)
-    {
-      char ch = io_read(AM_UART_RX).data;
-      if (ch == (char)-1){
-        ret = -1;
-        break;
-      }else{
-        ret = ch;
-        break;
+    if(io_read(AM_UART_CONFIG).present){
+      while (1)
+      {
+        char ch = io_read(AM_UART_RX).data;
+        if (ch == (char)-1){
+          ret = -1;
+          break;
+        }else{
+          ret = ch;
+          break;
+        }
       }
+    }else{
+      ret = '\0';
     }
+
   }
   return ret;
 }
